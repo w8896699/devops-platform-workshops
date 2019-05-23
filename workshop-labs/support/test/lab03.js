@@ -44,9 +44,17 @@ describe('Lab 03', function() {
   // mongodb://dbuser:dbpass@mongodb-dereks:27017/rocketchat
   describe('Rocket.Chat - DeploymentConfig', function() {
     const ps1 = spawnSync('oc', [`--namespace=${config.namespaces.deploy}`,'get',`DeploymentConfig/rocketchat-${config.username}`, '--output=json'], {'encoding': 'utf-8'});
-    const dc = JSON.parse(ps1.stdout);
+    let dc = {};
+    if (ps1.status === 0){
+      dc = JSON.parse(ps1.stdout);
+    }
+    
     const ps2 = spawnSync('oc', [`--namespace=${config.namespaces.deploy}`,'get',`Secret/mongodb-${config.username}`, '--output=json'], {'encoding': 'utf-8'});
-    const secret = JSON.parse(ps2.stdout);
+    const secret = {};
+    if (ps2.status === 0){
+      secret = JSON.parse(ps2.stdout); 
+    }
+    
 
     it(`Environment Variable: MONGO_URL`, function(done) {
       const mongo_db_user = Buffer.from(secret.data["database-user"], 'base64');
